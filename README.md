@@ -18,6 +18,7 @@ uvicorn app.main:app --reload
 ## Frontend
 
 - [React](https://react.dev/) with [Vite](https://vitejs.dev/)
+- Placeholder screens for group lists, details, board posts, events, and sign-up.
 
 ### Run
 
@@ -26,3 +27,7 @@ cd frontend
 npm install
 npm run dev
 ```
+
+## Docs
+
+- [Screen design](docs/SCREEN_DESIGN.md)
