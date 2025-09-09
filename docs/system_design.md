@@ -2,6 +2,23 @@
 
 This system uses a Python backend with SQLite for persistent storage.
 
+## Architecture Overview
+
+- **Client**: React single-page application served with Vite.
+- **Reverse Proxy**: Nginx or a cloud load balancer routes requests to the API.
+- **Application Layer**: FastAPI under Uvicorn workers organized into routers, services, and repositories.
+- **Database**: SQLite for development; PostgreSQL or MySQL for production deployments.
+- **Cache**: Redis for session storage, caching, and rate limiting.
+- **Message Broker**: Celery workers backed by Redis or RabbitMQ handle background jobs such as email and push notifications.
+- **Object Storage**: AWS S3 or similar service for user-uploaded images.
+- **External Providers**: OAuth identity providers and email/SMS gateways.
+
+### Request Flow
+1. Client sends an HTTP request to the reverse proxy.
+2. The proxy forwards the request to FastAPI, which validates input and routes to the appropriate handler.
+3. Handlers interact with the database or cache; heavy tasks are enqueued to the message broker.
+4. FastAPI returns a response while background workers process queued jobs and emit notifications.
+
 ## Database Schema
 
 1. **users**
@@ -59,11 +76,15 @@ This system uses a Python backend with SQLite for persistent storage.
    - Support for web/mobile push notifications.
    - Track read/unread status.
 
-6. **Search & Recommendations**
+6. **Asynchronous Processing**
+   - Background workers handle email delivery, push notifications, and other time-consuming tasks.
+   - Scheduled jobs clean up stale data and rebuild recommendation indexes.
+
+7. **Search & Recommendations**
    - Search groups, posts, users (consider search engine integration).
    - Recommend groups based on interests.
 
-7. **Admin Tools**
+8. **Admin Tools**
    - User/group statistics, handling reports.
    - View logs, enforce bans or removals.
 
@@ -76,9 +97,18 @@ This system uses a Python backend with SQLite for persistent storage.
 - **CI/CD**: GitHub Actions or GitLab CI for automated tests and deployment.
 - **Deployment**: Docker containers on Kubernetes or AWS ECS/Fargate.
 
-## Additional Considerations
+## Non-Functional Requirements
 
-- Security: SSL/TLS, input validation, CSRF/XSS protection, rate limiting.
-- Scalability: Modular services with horizontal scaling.
-- Logging/Monitoring: Centralized logs (ELK), metrics (Prometheus + Grafana).
-- Testing: Unit/integration tests, API documentation via Swagger/OpenAPI.
+- Security: SSL/TLS, input validation, CSRF/XSS protection, rate limiting, and role-based access control.
+- Scalability: Modular services with horizontal scaling and a message queue for intensive workloads.
+- Performance: Caching frequently used queries, pagination, and minimizing N+1 database calls.
+- Reliability: Regular backups and health checks with automatic restarts.
+- Logging/Monitoring: Centralized logs (ELK), metrics (Prometheus + Grafana), and distributed tracing.
+- Testing: Unit/integration tests, contract tests for external services, API documentation via Swagger/OpenAPI.
+- Maintainability: Clear module boundaries and adherence to coding standards.
+
+## Future Enhancements
+
+- Real-time group chat using WebSockets.
+- Event reminders via calendar integrations and push notifications.
+- Geo-based group discovery and location-aware recommendations.
