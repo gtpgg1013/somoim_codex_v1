@@ -27,3 +27,7 @@ cd frontend
 npm install
 npm run dev
 ```
+
+## Docs
+
+- [Screen design](docs/SCREEN_DESIGN.md)
